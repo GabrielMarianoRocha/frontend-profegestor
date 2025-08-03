@@ -2,10 +2,27 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useState } from 'react'
-import Link from 'next/link'
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Sidebar from '../components/Sidebar';
+import { styled } from '@mui/material/styles';
+
+// Componente estilizado para o conteúdo principal
+const MainContent = styled('main')(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  marginLeft: 0,
+  height: '100vh',
+  overflow: 'auto',
+}));
+
+const DataGridContainer = styled(Box)({
+  height: 'calc(100vh - 180px)', // Ajuste esta altura conforme necessário
+  width: '100%',
+  '& .MuiDataGrid-root': {
+    height: '100%',
+  },
+});
 
 const columns: GridColDef<(typeof rows)[number]>[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -57,35 +74,45 @@ const rows = [
   { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
   { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 ];
-
 export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <Stack spacing={2} direction="row">
-          <Button variant="contained">Cadastrar aluno</Button>
-        </Stack>
-      </header>
+    <Box sx={{ display: 'flex', height: '100vh' }}>
+      <Sidebar />
+      
+      <MainContent>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          mb: 3 
+        }}>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" color="primary">
+              Cadastrar aluno
+            </Button>
+          </Stack>
+        </Box>
 
-      <main>
-        <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
-            },
-          },
-        }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-      />
+        <DataGridContainer>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            sx={{
+              '& .MuiDataGrid-cell': {
+                borderRight: '1px solid rgba(224, 224, 224, 0.5)',
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                backgroundColor: '#f5f5f5',
+                fontWeight: 'bold',
+              },
+              '& .MuiDataGrid-row:hover': {
+                backgroundColor: 'rgba(25, 118, 210, 0.04)',
+              }
+            }}
+          />
+        </DataGridContainer>
+      </MainContent>
     </Box>
-      </main>
-    </div>
-  )
+  );
 }
