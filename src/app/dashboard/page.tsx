@@ -1,118 +1,119 @@
 'use client'
 import * as React from 'react';
-import Box from '@mui/material/Box';
+import { useState } from 'react';
+import { 
+  Box, 
+  Stack, 
+  Button, 
+  Typography, 
+  Modal
+} from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Sidebar from '../components/Sidebar';
 import { styled } from '@mui/material/styles';
+import Sidebar from '../components/Sidebar';
 
-// Componente estilizado para o conteúdo principal
-const MainContent = styled('main')(({ theme }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-  marginLeft: 0,
-  height: '100vh',
-  overflow: 'auto',
-}));
-
-const DataGridContainer = styled(Box)({
-  height: 'calc(100vh - 180px)', // Ajuste esta altura conforme necessário
+const PageContainer = styled('div')({
+  display: 'flex',
+  minHeight: '100vh',
   width: '100%',
-  '& .MuiDataGrid-root': {
-    height: '100%',
-  },
+  overflow: 'hidden'
 });
 
-const columns: GridColDef<(typeof rows)[number]>[] = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  {
-    field: 'name',
-    headerName: 'Nome',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'email',
-    headerName: 'Email',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'phone',
-    headerName: 'Telefone',
-    type: 'number',
-    width: 110,
-    editable: true,
-  },
-  {
-    field: 'startDate',
-    headerName: 'Data de inicio',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
-   {
-    field: 'notes',
-    headerName: 'Anotações  ',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
-];
+const MainContent = styled('main')(({ theme }) => ({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  padding: theme.spacing(3),
+  marginLeft: 0,
+  minHeight: '100vh',
+  overflow: 'auto',
+  backgroundColor: theme.palette.grey[50],
+}));
 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
+const DataGridWrapper = styled(Box)({
+  flex: 1,
+  minHeight: 0, // Crucial para o flexbox funcionar corretamente
+  width: '100%',
+  position: 'relative'
+});
+
+// Container interno do DataGrid
+const DataGridContainer = styled(Box)(({ theme }) => ({
+  height: '100%',
+  width: '100%',
+  backgroundColor: theme.palette.common.white,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[1],
+  '& .MuiDataGrid-root': {
+    border: 'none',
+    minHeight: '300px' // Altura mínima garantida
+  },
+  '& .MuiDataGrid-virtualScroller': {
+    overflowY: 'auto'
+  }
+}));
+
 export default function Dashboard() {
+  const [rows] = React.useState([
+    { id: 1, name: 'Jon Snow', email: 'jon@snow.com', phone: '(11) 9999-9999' },
+    // ... outros dados
+  ]);
+
+  const [columns] = React.useState<GridColDef[]>([
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'name', headerName: 'Nome', width: 180 },
+    { field: 'email', headerName: 'E-mail', width: 220 },
+    { field: 'phone', headerName: 'Telefone', width: 150 },
+  ]);
+
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
+    <PageContainer>
       <Sidebar />
       
       <MainContent>
+        {/* Header */}
         <Box sx={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          mb: 3 
+          mb: 3,
+          p: 2,
+          backgroundColor: 'white',
+          borderRadius: 1,
+          boxShadow: 1
         }}>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained" color="primary">
-              Cadastrar aluno
-            </Button>
-          </Stack>
+          <Typography variant="h6" fontWeight="bold">
+            Meus Alunos
+          </Typography>
+          <Button variant="contained" color="primary">
+            Novo Aluno
+          </Button>
         </Box>
 
-        <DataGridContainer>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            sx={{
-              '& .MuiDataGrid-cell': {
-                borderRight: '1px solid rgba(224, 224, 224, 0.5)',
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: '#f5f5f5',
-                fontWeight: 'bold',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'rgba(25, 118, 210, 0.04)',
-              }
-            }}
-          />
-        </DataGridContainer>
+        {/* DataGrid */}
+        <DataGridWrapper>
+          <DataGridContainer>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSizeOptions={[5, 10, 25]}
+              initialState={{
+                pagination: {
+                  paginationModel: { pageSize: 10 },
+                },
+              }}
+              sx={{
+                '& .MuiDataGrid-cell:focus': {
+                  outline: 'none',
+                },
+                '& .MuiDataGrid-columnHeader:focus': {
+                  outline: 'none',
+                },
+              }}
+            />
+          </DataGridContainer>
+        </DataGridWrapper>
       </MainContent>
-    </Box>
+    </PageContainer>
   );
 }
