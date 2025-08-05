@@ -33,7 +33,7 @@ export default function LoginForm() {
       console.log('Dados do login:', data)
       
       toast.success('Login realizado com sucesso!')
-      router.push('/dashboard') // Redireciona para a dashboard após login
+      router.push('/students') // Redireciona para a dashboard após login
     } catch (error) {
       toast.error('Credenciais inválidas. Tente novamente.')
     }
