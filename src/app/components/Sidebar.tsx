@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { 
-  Drawer, 
-  List, 
-  ListItem, 
-  ListItemButton, 
-  ListItemIcon, 
+import React, { useState } from "react";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
   ListItemText,
   Divider,
   IconButton,
   Toolbar,
   Typography,
-  styled
-} from '@mui/material';
+  styled,
+} from "@mui/material";
 import {
   Menu as MenuIcon,
   Inbox as InboxIcon,
@@ -20,30 +20,35 @@ import {
   Home as HomeIcon,
   Settings as SettingsIcon,
   People as PeopleIcon,
-  ShoppingCart as ShoppingCartIcon
-} from '@mui/icons-material';
+  ShoppingCart as ShoppingCartIcon,
+  Book,
+  Money,
+  Settings,
+} from "@mui/icons-material";
+import Image from 'next/image'
+import logo from './logo.png'
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 
 const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
   width: drawerWidth,
   flexShrink: 0,
-  whiteSpace: 'nowrap',
-  boxSizing: 'border-box',
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
   ...(open && {
-    '& .MuiDrawer-paper': {
+    "& .MuiDrawer-paper": {
       width: drawerWidth,
-      transition: theme.transitions.create('width', {
+      transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
       }),
     },
   }),
   ...(!open && {
-    '& .MuiDrawer-paper': {
-      overflowX: 'hidden',
+    "& .MuiDrawer-paper": {
+      overflowX: "hidden",
       width: `calc(${theme.spacing(7)} + 1px)`,
-      transition: theme.transitions.create('width', {
+      transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
@@ -59,23 +64,34 @@ const ElegantSidebar = () => {
   };
 
   const menuItems = [
-    { text: 'Home', icon: <HomeIcon /> },
-    { text: 'Users', icon: <PeopleIcon /> },
-    { text: 'Products', icon: <ShoppingCartIcon /> },
-    { text: 'Messages', icon: <InboxIcon /> },
-    { text: 'Settings', icon: <SettingsIcon /> },
+    { text: "Alunos", icon: <PeopleIcon /> },
+    { text: "Dashboard (visão geral)", icon: <HomeIcon /> },
+    { text: "Aulas", icon: <Book /> },
+    { text: "Financeiro", icon: <Money /> },
+    { text: "Configurações", icon: <Settings /> },
   ];
 
   return (
     <>
       <StyledDrawer variant="permanent" open={open}>
-        <Toolbar sx={{ 
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: open ? 'flex-end' : 'center',
-          px: [1],
-          minHeight: '64px !important'
-        }}>
+        <div className="flex justify-center">
+          <Image
+            src={logo} // Substitua pelo seu logo
+            alt="Logo"
+            width={200}
+            height={200}
+            priority
+          />
+        </div>
+        {/* <Toolbar
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: open ? "flex-end" : "center",
+            px: [1],
+            minHeight: "64px !important",
+          }}
+        >
           {open ? (
             <IconButton onClick={toggleDrawer}>
               <ChevronLeftIcon />
@@ -85,61 +101,38 @@ const ElegantSidebar = () => {
               <MenuIcon />
             </IconButton>
           )}
-        </Toolbar>
-        
+        </Toolbar> */}
+
         <Divider />
-        
+
         <List>
           {menuItems.map((item, index) => (
-            <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
+            <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
+                  justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText
+                  primary={item.text}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
-        
         <Divider />
-        
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
       </StyledDrawer>
     </>
   );

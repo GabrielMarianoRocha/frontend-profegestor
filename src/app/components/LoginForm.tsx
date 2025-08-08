@@ -3,11 +3,14 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema } from '@/lib/validation'
-import { Button } from '../ui/button'
+import { Button } from "@mui/material";
 import { Input } from '../ui/input'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
+import { login } from '@/services/api/userApi';
+import { useState } from 'react';
+
 
 type FormData = {
   email: string
@@ -16,45 +19,39 @@ type FormData = {
 
 export default function LoginForm() {
   const router = useRouter()
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(loginSchema),
-  })
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const onSubmit = async (data: FormData) => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const data = { email, password }
     try {
-      // Simulando uma requisição de login
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Aqui você faria a chamada real para sua API
-      console.log('Dados do login:', data)
-      
-      toast.success('Login realizado com sucesso!')
-      router.push('/dashboard') // Redireciona para a dashboard após login
-    } catch (error) {
-      toast.error('Credenciais inválidas. Tente novamente.')
+      const response = await login(data)
+      const { token } = response
+      localStorage.setItem('usertoken', token)
+      toast.success("Bem vindo!")
+      router.push('/dashboard')
+    } catch (err: any) {
+      toast.error("Erro ao fazer login, verifique as credenciais.");
+      console.log(err, 'err')
     }
   }
 
+
   return (
-    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-6" onSubmit={handleLogin}>
       <Input
         label="E-mail"
         type="email"
-        autoComplete="email"
-        error={errors.email?.message}
-        {...register('email')}
+        value={email}
+        onChange={e => setEmail(e.target.value)}
       />
 
       <Input
         label="Senha"
         type="password"
-        autoComplete="current-password"
-        error={errors.password?.message}
-        {...register('password')}
+        value={password}
+        onChange={e => setPassword(e.target.value)}
       />
 
       <div className="flex items-center justify-between">
@@ -83,9 +80,9 @@ export default function LoginForm() {
       <div>
         <Button
           type="submit"
-          variant="primary"
+          variant="contained" 
+          color="primary"
           className="w-full justify-center"
-          isLoading={isSubmitting}
         >
           Entrar
         </Button>

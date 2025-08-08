@@ -5,5 +5,6 @@ export const login = async (data: {
     password: string
 }) => {
   const response = await api.post('/api/login', data);
+  localStorage.setItem("userId", response.data.user.id )
   return response.data;
 };
