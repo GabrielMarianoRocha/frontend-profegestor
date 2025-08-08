@@ -7,9 +7,6 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  IconButton,
-  Toolbar,
-  Typography,
   styled,
 } from "@mui/material";
 import {
@@ -24,9 +21,12 @@ import {
   Book,
   Money,
   Settings,
+  ExitToApp,
+  ExitToAppOutlined,
 } from "@mui/icons-material";
 import Image from 'next/image'
 import logo from './logo.png'
+import { useRouter } from 'next/navigation'
 
 const drawerWidth = 300;
 
@@ -57,18 +57,21 @@ const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
 }));
 
 const ElegantSidebar = () => {
+  const router = useRouter()
   const [open, setOpen] = useState(true);
-
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
+  const signOut = () => {
+  localStorage.removeItem('usertoken');
+  localStorage.removeItem('userId');
+  router.push("/")
+}
 
   const menuItems = [
-    { text: "Alunos", icon: <PeopleIcon /> },
-    { text: "Dashboard (visão geral)", icon: <HomeIcon /> },
-    { text: "Aulas", icon: <Book /> },
-    { text: "Financeiro", icon: <Money /> },
-    { text: "Configurações", icon: <Settings /> },
+    { text: "Alunos", icon: <PeopleIcon />, onClick: () => console.log('Alunos')},
+    { text: "Dashboard (visão geral)", icon: <HomeIcon />, onClick: () => console.log('Dashboard') },
+    { text: "Aulas", icon: <Book />, onClick: () => console.log('Aulas') },
+    { text: "Financeiro", icon: <Money />, onClick: () => console.log('Financeiro') },
+    { text: "Configurações", icon: <Settings />, onClick: () => console.log('Configurações') },
+    { text: "Sair", icon: <ExitToAppOutlined />, onClick: () => signOut() },
   ];
 
   return (
@@ -76,39 +79,18 @@ const ElegantSidebar = () => {
       <StyledDrawer variant="permanent" open={open}>
         <div className="flex justify-center">
           <Image
-            src={logo} // Substitua pelo seu logo
+            src={logo}
             alt="Logo"
             width={200}
             height={200}
             priority
           />
         </div>
-        {/* <Toolbar
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: open ? "flex-end" : "center",
-            px: [1],
-            minHeight: "64px !important",
-          }}
-        >
-          {open ? (
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          ) : (
-            <IconButton onClick={toggleDrawer}>
-              <MenuIcon />
-            </IconButton>
-          )}
-        </Toolbar> */}
-
-        <Divider />
-
         <List>
           {menuItems.map((item, index) => (
             <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
+                onClick={item.onClick}
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",

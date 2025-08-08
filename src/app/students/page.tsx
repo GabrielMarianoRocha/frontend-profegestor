@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { useState, useEffect } from "react";
+import axios from 'axios';
 import {
   Box,
   TextField,
@@ -10,11 +11,12 @@ import {
   Modal,
   Divider,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import Sidebar from "../components/Sidebar";
 import { getStudents, createStudent } from "@/services/api/studentApi";
-import { Input } from "../ui/input";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const style = {
   position: "absolute",
@@ -68,14 +70,17 @@ const DataGridContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-export default function Students() {
+export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [students, setStudents] = useState([]);
+  const token = localStorage.getItem("usertoken") || "";
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     getStudents().then(setStudents).catch(console.error);
+    console.log(localStorage.getItem('user'), 'user')
   }, []);
 
   const [formData, setFormData] = useState({
@@ -86,6 +91,30 @@ export default function Students() {
     monthlyFee: "",
     notes: "",
   });
+
+  const handleEdit = (student) => {
+  console.log("Editar aluno:", student);
+  setFormData({
+    name: student.name,
+    email: student.email,
+    phone: student.phone,
+    startDate: student.startDate,
+    monthlyFee: student.monthlyFee?.toString() || "",
+    notes: student.notes,
+  });
+  setOpen(true);
+  setEditingId(student.id);
+};
+
+const handleDelete = async (student) => {
+  console.log("Excluir aluno:", student);
+  try {
+    // await deleteStudent(student.id, token); // Implemente essa função na sua API
+    setStudents((prev) => prev.filter((s) => s.id !== student.id));
+  } catch (error) {
+    console.error("Erro ao deletar aluno:", error);
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,7 +130,9 @@ export default function Students() {
         email: formData.email,
         phone: formData.phone || undefined,
         startDate: formData.startDate || undefined,
-        monthlyFee: formData.monthlyFee ? Number(formData.monthlyFee) : undefined,
+        monthlyFee: formData.monthlyFee
+          ? Number(formData.monthlyFee)
+          : undefined,
         notes: formData.notes || "",
         userId: userId,
         classes: [],
@@ -109,7 +140,7 @@ export default function Students() {
         progress: [],
       };
 
-      await createStudent(dataToSend);
+      await createStudent(dataToSend, token);
       handleClose();
     } catch (error) {
       console.error("Erro ao criar aluno:", error);
@@ -124,6 +155,30 @@ export default function Students() {
     { field: "startDate", headerName: "Data de inicio", width: 150 },
     { field: "monthlyFee", headerName: "Valor mensal", width: 150 },
     { field: "notes", headerName: "Anotações", width: 150 },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Ações",
+      width: 120,
+      getActions: (params) => [
+        <GridActionsCellItem
+          key="edit"
+          label="Editar"
+          showInMenu={false} // mostra como ícone no final da linha
+          onClick={() => handleEdit(params.row)}
+          icon={<EditIcon />}
+          color="primary"
+        />,
+        <GridActionsCellItem
+          key="delete"
+          label="Excluir"
+          showInMenu={false}
+          onClick={() => handleDelete(params.row)}
+          icon={<DeleteIcon />}
+          color="error"
+        />,
+      ],
+    },
   ]);
 
   return (
