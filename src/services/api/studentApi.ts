@@ -16,8 +16,12 @@ export const createStudent = async (studentData: {
   classes?: any[];
   payments?: any[];
   progress?: any[];
-}) => {
-  const response = await api.post('/api/students/createStudent', studentData);
+}, token: string) => {
+  const response = await api.post('/api/students/createStudent', studentData, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   return response.data;
 };
 
